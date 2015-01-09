@@ -14,56 +14,106 @@ type Character struct {
 	Alignment  string
 	ArmorClass int
 	HitPoints  int
+	Experience int
+	Level      int
 	Abilities  Abilities
 }
 
-func NewCharacter() Character {
-	newCharacter := Character{"", "", 10, 5, NewAbilities()}
-	return newCharacter
+func NewCharacter() *Character {
+	newCharacter := Character{"", "", 10, 5, 0, 1, NewAbilities()}
+	return &newCharacter
 }
 
-func (c Character) Attack(defender *Character, dieRoll int, isCritical bool) bool {
-	canHit := false
-	damageAmount := 1
+const CRITICAL_MULTIPLIER = 2
+const MINIMUM_DAMAGE = 1
+const EXPERIENCE_INCREMENTOR = 10
 
-	strengthModifier := GetAbilityModifier(c.Abilities.Strength)
+func Attack(attacker *Character, defender *Character, dieRoll int, isCritical bool) bool {
+	strengthModifier := GetStrengthModifier(*attacker, isCritical)
+	damageAmount := GetDamageAmount(isCritical, strengthModifier)
 
-	if isCritical {
-		damageAmount = damageAmount * 2
-		strengthModifier = strengthModifier * 2
-	}
-
-	damageAmount += strengthModifier
 	dieRoll += strengthModifier
 
+	canHit := false
 	if dieRoll >= defender.ArmorClass {
 		canHit = true
-		defender.TakeDamage(math.Max(1, damageAmount))
+		defender.TakeDamage(MaxInt(MINIMUM_DAMAGE, damageAmount))
+		GainExperience(attacker, EXPERIENCE_INCREMENTOR)
 	}
 
 	return canHit
 }
 
+func GainExperience(character *Character, amountToIncrement int) {
+	character.Experience += amountToIncrement
+}
+
+func (character *Character) CalculatedArmorClass() int {
+	dexterityModifier := GetAbilityModifier(character.Abilities.Dexterity)
+	return character.ArmorClass + dexterityModifier
+}
+
+const EXPERIENCE_STEP float64 = 1000.0
+
+func (character *Character) CalculatedLevel() int {
+	experienceIncrementor := math.Floor(float64(character.Experience) / EXPERIENCE_STEP)
+	return character.Level + int(experienceIncrementor)
+}
+
+func (character *Character) CalculatedHitPoints() int {
+	constitutionModifier := GetAbilityModifier(character.Abilities.Constitution)
+	combinedHitPoints := (character.HitPoints + constitutionModifier) * character.CalculatedLevel()
+	return MaxInt(1, combinedHitPoints)
+}
+
+func GetDamageAmount(isCritical bool, strengthModifier int) int {
+	damageAmount := MINIMUM_DAMAGE
+	if isCritical {
+		damageAmount = damageAmount * CRITICAL_MULTIPLIER
+	}
+	damageAmount += strengthModifier
+	return damageAmount
+}
+
+func GetStrengthModifier(character Character, isCritical bool) int {
+	strengthModifier := GetAbilityModifier(character.Abilities.Strength)
+	if isCritical {
+		strengthModifier = strengthModifier * CRITICAL_MULTIPLIER
+	}
+	return strengthModifier
+}
+
+const USE_PARAMETER = -1
+const CRIT_NATURAL_ROLL = 20
+const TEMPORARY_ROLL_VALUE = 10
+
 func RollDie(returnValue int) (int, bool) {
 	isCritical := false
-	if returnValue != -1 {
-		//if it's a 'natural' 20 then it's a critical hit
-		if returnValue == 20 {
+	//for now, users must pass in a -1 if they don't want to specify the value they want back
+	if returnValue != USE_PARAMETER {
+		if returnValue == CRIT_NATURAL_ROLL {
 			isCritical = true
 		}
 		return returnValue, isCritical
 	}
-
 	//@todo return a random value between 1 and 20 and test for crit
-	return 10, isCritical
+	return TEMPORARY_ROLL_VALUE, isCritical
 }
 
-func (c *Character) TakeDamage(damageAmount int) {
-	c.HitPoints -= damageAmount
+func (character *Character) CalculatedRoll(returnValue int) (int, bool) {
+	roll, isCritical := RollDie(returnValue)
+	incrementor := int(math.Floor(character.CalculatedLevel() / 2))
+	roll += incrementor
+	return roll, isCritical
 }
 
-func (c Character) IsAlive() bool {
-	return c.HitPoints > 0
+func (character *Character) TakeDamage(damageAmount int) {
+	calculatedHitPoints := character.CalculatedHitPoints()
+	character.HitPoints = calculatedHitPoints - damageAmount
+}
+
+func (character *Character) IsAlive() bool {
+	return character.HitPoints > 0
 }
 
 func MaxInt(x int, y int) int {
