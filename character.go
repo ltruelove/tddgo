@@ -21,7 +21,14 @@ type Character struct {
 }
 
 func NewCharacter() *Character {
-	newCharacter := Character{"", "", 10, 5, 0, 1, NewAbilities(), DefaultClass{}}
+	newCharacter := Character{"",
+		"",
+		10,
+		HIT_POINTS_PER_LEVEL,
+		0,
+		1,
+		NewAbilities(),
+		DefaultClass{}}
 	return &newCharacter
 }
 

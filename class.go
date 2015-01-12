@@ -1,17 +1,8 @@
 package main
 
+const HIT_POINTS_PER_LEVEL int = 5
+
 type Class interface {
 	IsRollIncrementedBy1() bool
 	HitPointsPerLevel() int
-}
-
-type Fighter struct {
-}
-
-func (fighter Fighter) IsRollIncrementedBy1() bool {
-	return true
-}
-
-func (fighter Fighter) HitPointsPerLevel() int {
-	return 10
 }
