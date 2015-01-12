@@ -26,7 +26,16 @@ func NewCharacter() *Character {
 }
 
 func GainExperience(character *Character, amountToIncrement int) {
+	currentLevel := character.CalculatedLevel()
 	character.Experience += amountToIncrement
+	newLevel := character.CalculatedLevel()
+	if newLevel > currentLevel {
+		character.LevelUp()
+	}
+}
+
+func (character *Character) LevelUp() {
+	character.HitPoints = character.CalculatedHitPoints()
 }
 
 func (character *Character) CalculatedArmorClass() int {
@@ -43,7 +52,8 @@ func (character *Character) CalculatedLevel() int {
 
 func (character *Character) CalculatedHitPoints() int {
 	constitutionModifier := GetAbilityModifier(character.Abilities.Constitution)
-	combinedHitPoints := (character.Class.HitPointsPerLevel() + constitutionModifier) * character.CalculatedLevel()
+	hitPointsMultiplier := character.Class.HitPointsPerLevel() + constitutionModifier
+	combinedHitPoints := (hitPointsMultiplier * character.CalculatedLevel())
 	return MaxInt(1, combinedHitPoints)
 }
 
@@ -64,8 +74,7 @@ func (character *Character) CalculatedRoll(returnValue int) (int, bool) {
 }
 
 func (character *Character) TakeDamage(damageAmount int) {
-	calculatedHitPoints := character.CalculatedHitPoints()
-	character.HitPoints = calculatedHitPoints - damageAmount
+	character.HitPoints -= damageAmount
 }
 
 func (character *Character) IsAlive() bool {

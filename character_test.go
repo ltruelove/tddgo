@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	//"fmt"
 )
 
 func TestCharacterName(t *testing.T) {
