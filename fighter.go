@@ -10,3 +10,11 @@ func (fighter Fighter) IsRollIncrementedBy1() bool {
 func (fighter Fighter) HitPointsPerLevel() int {
 	return HIT_POINTS_PER_LEVEL + 5
 }
+
+func (fighter Fighter) IsTripleDamageOnCrit() bool {
+	return false
+}
+
+func (fighter Fighter) IgnoreDexterityModWhenAttacking() bool {
+	return false
+}

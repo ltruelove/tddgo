@@ -31,3 +31,38 @@ func TestFighterHitPointsByLevel(t *testing.T) {
 		t.Log("Hit points matched the expected value")
 	}
 }
+
+func TestRogueTriplesDamageOnCriticalHits(t *testing.T) {
+	attacker := NewCharacter()
+	defender := NewCharacter()
+	attacker.Class = Rogue{}
+	defender.HitPoints = 7
+	expectedHitPoints := 1
+
+	dieRoll, isCritical := RollDie(20)
+	Attack(attacker, defender, dieRoll, isCritical)
+
+	if defender.HitPoints != expectedHitPoints {
+		t.Errorf("Hit points were %d, expected %d", defender.HitPoints, expectedHitPoints)
+	} else {
+		t.Log("Hit points matched the expected value")
+	}
+}
+
+func TestRogueIgnoresDexterityModOnAttack(t *testing.T) {
+	attacker := NewCharacter()
+	defender := NewCharacter()
+	attacker.Class = Rogue{}
+	defender.HitPoints = 7
+	defender.Abilities.Dexterity = 20
+	expectedHitPoints := 6
+
+	dieRoll, isCritical := RollDie(10)
+	Attack(attacker, defender, dieRoll, isCritical)
+
+	if defender.HitPoints != expectedHitPoints {
+		t.Errorf("Hit points were %d, expected %d", defender.HitPoints, expectedHitPoints)
+	} else {
+		t.Log("Hit points matched the expected value")
+	}
+}

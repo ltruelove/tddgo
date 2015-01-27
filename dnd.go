@@ -16,15 +16,23 @@ const EXPERIENCE_INCREMENTOR = 10
 
 func Attack(attacker *Character, defender *Character, dieRoll int, isCritical bool) bool {
 	strengthModifier := GetStrengthModifier(attacker, isCritical)
-	damageAmount := GetDamageAmount(isCritical, strengthModifier)
+	damageAmount := GetDamageAmount(isCritical, strengthModifier, attacker)
 
 	dieRoll += strengthModifier
 
 	canHit := false
-	if dieRoll >= defender.ArmorClass {
-		canHit = true
-		defender.TakeDamage(MaxInt(MINIMUM_DAMAGE, damageAmount))
-		GainExperience(attacker, EXPERIENCE_INCREMENTOR)
+	if attacker.Class.IgnoreDexterityModWhenAttacking() {
+		if dieRoll >= defender.ArmorClass {
+			canHit = true
+			defender.TakeDamage(MaxInt(MINIMUM_DAMAGE, damageAmount))
+			GainExperience(attacker, EXPERIENCE_INCREMENTOR)
+		}
+	} else {
+		if dieRoll >= defender.CalculatedArmorClass() {
+			canHit = true
+			defender.TakeDamage(MaxInt(MINIMUM_DAMAGE, damageAmount))
+			GainExperience(attacker, EXPERIENCE_INCREMENTOR)
+		}
 	}
 
 	return canHit
@@ -38,9 +46,12 @@ func GetStrengthModifier(character *Character, isCritical bool) int {
 	return strengthModifier
 }
 
-func GetDamageAmount(isCritical bool, strengthModifier int) int {
+func GetDamageAmount(isCritical bool, strengthModifier int, attacker *Character) int {
 	damageAmount := MINIMUM_DAMAGE
 	if isCritical {
+		if attacker.Class.IsTripleDamageOnCrit() {
+			damageAmount = damageAmount * 3
+		}
 		damageAmount = damageAmount * CRITICAL_MULTIPLIER
 	}
 	damageAmount += strengthModifier
