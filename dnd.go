@@ -39,7 +39,14 @@ func Attack(attacker *Character, defender *Character, dieRoll int, isCritical bo
 }
 
 func GetStrengthModifier(character *Character, isCritical bool) int {
-	strengthModifier := GetAbilityModifier(character.Abilities.Strength)
+	abilityToUse := 0
+	if character.Class.UseDexterityForStrengthModifier() {
+		abilityToUse = character.Abilities.Dexterity
+	} else {
+		abilityToUse = character.Abilities.Strength
+	}
+
+	strengthModifier := GetAbilityModifier(abilityToUse)
 	if isCritical {
 		strengthModifier = strengthModifier * CRITICAL_MULTIPLIER
 	}

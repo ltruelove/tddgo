@@ -7,4 +7,5 @@ type Class interface {
 	HitPointsPerLevel() int
 	IsTripleDamageOnCrit() bool
 	IgnoreDexterityModWhenAttacking() bool
+	UseDexterityForStrengthModifier() bool
 }

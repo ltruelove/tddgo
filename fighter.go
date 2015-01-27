@@ -18,3 +18,7 @@ func (fighter Fighter) IsTripleDamageOnCrit() bool {
 func (fighter Fighter) IgnoreDexterityModWhenAttacking() bool {
 	return false
 }
+
+func (fighter Fighter) UseDexterityForStrengthModifier() bool {
+	return false
+}

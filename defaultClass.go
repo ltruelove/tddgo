@@ -18,3 +18,7 @@ func (defaultClass DefaultClass) IsTripleDamageOnCrit() bool {
 func (defaultClass DefaultClass) IgnoreDexterityModWhenAttacking() bool {
 	return false
 }
+
+func (defaultClass DefaultClass) UseDexterityForStrengthModifier() bool {
+	return false
+}

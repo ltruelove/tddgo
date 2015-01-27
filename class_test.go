@@ -66,3 +66,18 @@ func TestRogueIgnoresDexterityModOnAttack(t *testing.T) {
 		t.Log("Hit points matched the expected value")
 	}
 }
+
+func TestRogueAddsDexterityToAttack(t *testing.T) {
+	attacker := NewCharacter()
+	attacker.Class = Rogue{}
+	attacker.Abilities.Dexterity = 20
+	expectedStrengthModifier := 5
+
+	strengthModifier := GetStrengthModifier(attacker, false)
+
+	if strengthModifier != expectedStrengthModifier {
+		t.Errorf("Strength modifier was %d, expected %d", strengthModifier, expectedStrengthModifier)
+	} else {
+		t.Log("Strength modifier matched the expected value")
+	}
+}

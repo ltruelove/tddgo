@@ -18,3 +18,7 @@ func (rogue Rogue) IsTripleDamageOnCrit() bool {
 func (rogue Rogue) IgnoreDexterityModWhenAttacking() bool {
 	return true
 }
+
+func (rogue Rogue) UseDexterityForStrengthModifier() bool {
+	return true
+}
