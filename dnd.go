@@ -21,18 +21,10 @@ func Attack(attacker *Character, defender *Character, dieRoll int, isCritical bo
 	dieRoll += strengthModifier
 
 	canHit := false
-	if attacker.Class.IgnoreDexterityModWhenAttacking() {
-		if dieRoll >= defender.ArmorClass {
-			canHit = true
-			defender.TakeDamage(MaxInt(MINIMUM_DAMAGE, damageAmount))
-			GainExperience(attacker, EXPERIENCE_INCREMENTOR)
-		}
-	} else {
-		if dieRoll >= defender.CalculatedArmorClass() {
-			canHit = true
-			defender.TakeDamage(MaxInt(MINIMUM_DAMAGE, damageAmount))
-			GainExperience(attacker, EXPERIENCE_INCREMENTOR)
-		}
+	if dieRoll >= defender.CalculatedArmorClass(attacker) {
+		canHit = true
+		defender.TakeDamage(MaxInt(MINIMUM_DAMAGE, damageAmount))
+		GainExperience(attacker, EXPERIENCE_INCREMENTOR)
 	}
 
 	return canHit
@@ -54,7 +46,7 @@ func GetStrengthModifier(character *Character, isCritical bool) int {
 }
 
 func GetDamageAmount(isCritical bool, strengthModifier int, attacker *Character) int {
-	damageAmount := MINIMUM_DAMAGE
+	damageAmount := attacker.Class.MinimumDamage()
 	if isCritical {
 		if attacker.Class.IsTripleDamageOnCrit() {
 			damageAmount = damageAmount * 3
@@ -65,13 +57,22 @@ func GetDamageAmount(isCritical bool, strengthModifier int, attacker *Character)
 	return damageAmount
 }
 
-func RollDie(returnValue int) (int, bool) {
+func RollDie(returnValue int, roller *Character) (int, bool) {
 	isCritical := false
+	if returnValue == CRIT_NATURAL_ROLL {
+		isCritical = true
+	}
+
+	if roller.Class.IncreaseAttackRollBy1EverySecondAndThirdLevel() {
+		level := roller.CalculatedLevel()
+		if level >= 3 {
+			returnValue += 2
+		} else if level == 2 {
+			returnValue += 1
+		}
+	}
 	//for now, users must pass in a -1 if they don't want to specify the value they want back
 	if returnValue != USE_PARAMETER {
-		if returnValue == CRIT_NATURAL_ROLL {
-			isCritical = true
-		}
 		return returnValue, isCritical
 	}
 	//@todo return a random value between 1 and 20 and test for crit

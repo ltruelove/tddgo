@@ -51,7 +51,7 @@ func TestCharacterDefaultHitPoints(t *testing.T) {
 func TestCharacterRollWithHit(t *testing.T) {
 	attacker := NewCharacter()
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(20)
+	dieRoll, isCritical := RollDie(20, attacker)
 
 	wasAbleToAttack := Attack(attacker, defender, dieRoll, isCritical)
 
@@ -65,7 +65,7 @@ func TestCharacterRollWithHit(t *testing.T) {
 func TestCharacterRollWithHitDoesDamage(t *testing.T) {
 	attacker := NewCharacter()
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(10)
+	dieRoll, isCritical := RollDie(10, attacker)
 
 	Attack(attacker, defender, dieRoll, isCritical)
 
@@ -79,7 +79,7 @@ func TestCharacterRollWithHitDoesDamage(t *testing.T) {
 func TestCharacterRollWithCriticalHit(t *testing.T) {
 	attacker := NewCharacter()
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(20)
+	dieRoll, isCritical := RollDie(20, attacker)
 
 	Attack(attacker, defender, dieRoll, isCritical)
 
@@ -93,7 +93,7 @@ func TestCharacterRollWithCriticalHit(t *testing.T) {
 func TestCharacterIsAliveUntilZero(t *testing.T) {
 	attacker := NewCharacter()
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(20)
+	dieRoll, isCritical := RollDie(20, attacker)
 
 	Attack(attacker, defender, dieRoll, isCritical)
 	Attack(attacker, defender, dieRoll, isCritical)
@@ -111,7 +111,7 @@ func TestCharacterAttackWithStrengthModifier(t *testing.T) {
 	attacker.Abilities.Strength = 15
 
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(10)
+	dieRoll, isCritical := RollDie(10, attacker)
 	expectedHP := 2
 
 	Attack(attacker, defender, dieRoll, isCritical)
@@ -128,7 +128,7 @@ func TestCharacterAttackCritWithStrengthModifier(t *testing.T) {
 	attacker.Abilities.Strength = 15
 
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(20)
+	dieRoll, isCritical := RollDie(20, attacker)
 	expectedHP := -1
 
 	Attack(attacker, defender, dieRoll, isCritical)
@@ -145,7 +145,7 @@ func TestCharacterAttackMinimumDamage(t *testing.T) {
 	attacker.Abilities.Strength = 1
 
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(15)
+	dieRoll, isCritical := RollDie(15, attacker)
 	expectedHP := 4
 
 	Attack(attacker, defender, dieRoll, isCritical)
@@ -159,12 +159,13 @@ func TestCharacterAttackMinimumDamage(t *testing.T) {
 
 func TestDexterityModifierOnArmorClass(t *testing.T) {
 	attacker := NewCharacter()
-	attacker.Abilities.Dexterity = 15
+	defender := NewCharacter()
+	defender.Abilities.Dexterity = 15
 	expectedArmorValue := 12
-	armorClass := attacker.CalculatedArmorClass()
+	armorClass := defender.CalculatedArmorClass(attacker)
 
 	if armorClass != expectedArmorValue {
-		t.Errorf("Attacker armor class value incorrect. Expected %d, and got %d", expectedArmorValue, armorClass)
+		t.Errorf("Defender armor class value incorrect. Expected %d, and got %d", expectedArmorValue, armorClass)
 	} else {
 		t.Log("Attacker armor class calculated correctly")
 	}
@@ -199,7 +200,7 @@ func TestConstitutionModifierMinimumHitPoints(t *testing.T) {
 func TestExperiencePointsGainedAfterAttack(t *testing.T) {
 	attacker := NewCharacter()
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(15)
+	dieRoll, isCritical := RollDie(15, attacker)
 	expectedExperience := 10
 
 	Attack(attacker, defender, dieRoll, isCritical)
@@ -252,7 +253,7 @@ func TestHitPointsAfterLevelUpWithConstitutionBump(t *testing.T) {
 	attacker.Abilities.Constitution = 15
 	attacker.Experience = 990
 	defender := NewCharacter()
-	dieRoll, isCritical := RollDie(15)
+	dieRoll, isCritical := RollDie(15, attacker)
 	expectedHitPoints := 14
 
 	Attack(attacker, defender, dieRoll, isCritical)

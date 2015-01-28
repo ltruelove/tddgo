@@ -22,3 +22,15 @@ func (fighter Fighter) IgnoreDexterityModWhenAttacking() bool {
 func (fighter Fighter) UseDexterityForStrengthModifier() bool {
 	return false
 }
+
+func (fighter Fighter) MinimumDamage() int {
+	return MINIMUM_DAMAGE
+}
+
+func (fighter Fighter) AddsWisdomModifierToArmorClass() bool {
+	return false
+}
+
+func (fighter Fighter) IncreaseAttackRollBy1EverySecondAndThirdLevel() bool {
+	return false
+}

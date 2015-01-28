@@ -8,4 +8,7 @@ type Class interface {
 	IsTripleDamageOnCrit() bool
 	IgnoreDexterityModWhenAttacking() bool
 	UseDexterityForStrengthModifier() bool
+	MinimumDamage() int
+	AddsWisdomModifierToArmorClass() bool
+	IncreaseAttackRollBy1EverySecondAndThirdLevel() bool
 }

@@ -22,3 +22,15 @@ func (rogue Rogue) IgnoreDexterityModWhenAttacking() bool {
 func (rogue Rogue) UseDexterityForStrengthModifier() bool {
 	return true
 }
+
+func (rogue Rogue) MinimumDamage() int {
+	return MINIMUM_DAMAGE
+}
+
+func (rogue Rogue) AddsWisdomModifierToArmorClass() bool {
+	return false
+}
+
+func (rogue Rogue) IncreaseAttackRollBy1EverySecondAndThirdLevel() bool {
+	return false
+}

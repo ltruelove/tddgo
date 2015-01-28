@@ -22,3 +22,15 @@ func (defaultClass DefaultClass) IgnoreDexterityModWhenAttacking() bool {
 func (defaultClass DefaultClass) UseDexterityForStrengthModifier() bool {
 	return false
 }
+
+func (defaultClass DefaultClass) MinimumDamage() int {
+	return MINIMUM_DAMAGE
+}
+
+func (defaultClass DefaultClass) AddsWisdomModifierToArmorClass() bool {
+	return false
+}
+
+func (defaultClass DefaultClass) IncreaseAttackRollBy1EverySecondAndThirdLevel() bool {
+	return false
+}

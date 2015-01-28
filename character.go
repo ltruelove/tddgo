@@ -21,7 +21,8 @@ type Character struct {
 }
 
 func NewCharacter() *Character {
-	newCharacter := Character{"",
+	newCharacter := Character{
+		"",
 		"",
 		10,
 		HIT_POINTS_PER_LEVEL,
@@ -45,9 +46,22 @@ func (character *Character) LevelUp() {
 	character.HitPoints = character.CalculatedHitPoints()
 }
 
-func (character *Character) CalculatedArmorClass() int {
+func (character *Character) CalculatedArmorClass(attacker *Character) int {
+	armorModifier := 0
+	if character.Class.AddsWisdomModifierToArmorClass() {
+		armorModifier += MaxInt(0, GetAbilityModifier(character.Abilities.Wisdom))
+	}
+
 	dexterityModifier := GetAbilityModifier(character.Abilities.Dexterity)
-	return character.ArmorClass + dexterityModifier
+	if attacker.Class.IgnoreDexterityModWhenAttacking() {
+		if dexterityModifier < 0 {
+			armorModifier += dexterityModifier
+		}
+	} else {
+		armorModifier += dexterityModifier
+	}
+
+	return character.ArmorClass + armorModifier
 }
 
 const EXPERIENCE_STEP float64 = 1000.0
@@ -69,7 +83,7 @@ const CRIT_NATURAL_ROLL = 20
 const TEMPORARY_ROLL_VALUE = 10
 
 func (character *Character) CalculatedRoll(returnValue int) (int, bool) {
-	roll, isCritical := RollDie(returnValue)
+	roll, isCritical := RollDie(returnValue, character)
 	incrementor := 0
 	if character.Class.IsRollIncrementedBy1() {
 		incrementor = character.CalculatedLevel()
